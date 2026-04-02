@@ -2,11 +2,13 @@
 
 #include "imgen.h"
 #include "imgfactory.h"
+#include "basic_patterns.h"
 
 int main(void) {
     create_image(1920, 1080, BPP16, MIN, "MIN_16bpp.raw", NULL);
     create_image(1920, 1080, BPP16, MAX, "MAX_16bpp.raw", NULL);
     create_image(1920, 1080, BPP16, LINEAR_GRADIENT, "LINEAR_GRADIENT_16bpp.raw", NULL);
+    create_image(1920, 1080, BPP16, LINEAR_GRADIENT_PER_CH, "LINEAR_GRADIENT_PER_CH_16bpp.raw", NULL);
 
     st_checkers_opts_t chck_o = {
         .num_pax_x = 16,

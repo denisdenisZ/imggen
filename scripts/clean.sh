@@ -1,1 +1,1 @@
-rm *.raw *.png
+rm imgs/*.raw imgs/*.png

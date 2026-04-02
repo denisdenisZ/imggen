@@ -20,26 +20,46 @@ typedef enum {
     BGGR
 } e_bayer_pattern_t;
 
+typedef enum { CH_R, CH_GR, CH_GB, CH_B, CH_MAX } e_channel_t;
+
+typedef struct {
+    e_channel_t tile[2][2];
+} st_bayer_pattern_t;
+
+static const st_bayer_pattern_t BAYER_RGGB = {{ {CH_R,  CH_GR}, {CH_GB, CH_B} }};
+static const st_bayer_pattern_t BAYER_BGGR = {{ {CH_B,  CH_GB}, {CH_GR, CH_R} }};
+static const st_bayer_pattern_t BAYER_GRBG = {{ {CH_GR, CH_R},  {CH_B,  CH_GB} }};
+static const st_bayer_pattern_t BAYER_GBRG = {{ {CH_GB, CH_B},  {CH_R,  CH_GR} }};
+
+static const st_bayer_pattern_t *bayer_lut[] = {
+    [RGGB] = &BAYER_RGGB,
+    [BGGR] = &BAYER_BGGR,
+};
+
 typedef struct {
     e_bpp_t bpp;
     uint8_t bytes_pp;
+
     uint32_t width;
     uint32_t height;
+
+    e_bayer_pattern_t pattern;
+
     uint8_t *data;
 } st_img_t;
 
-typedef struct {
-    uint32_t num_pax_x;
-    uint32_t num_pax_y;
-    bool invert;
-} st_checkers_opts_t;
+typedef void (*px_transform)(uint8_t *pixel, e_bpp_t bpp, void *opt);
+typedef void (*px_transform_xy)(uint8_t *pixel, e_bpp_t bpp, e_channel_t ch, uint32_t x, uint32_t y, void *opt);
 
-void set_max(st_img_t *img);
-void set_min(st_img_t *img);
-void set_linear_gradient(st_img_t *img);
-void set_checkers(st_img_t *img, uint8_t num_pax_x, uint8_t num_pax_y, bool invert);
+void write_pixel_le(uint8_t *pixel, e_bpp_t bpp, uint64_t val);
+uint64_t read_pixel_le(const uint8_t *pixel, e_bpp_t bpp);
+uint64_t pow2(uint64_t num);
 
-st_img_t *alloc_img(uint32_t width, uint32_t height, e_bpp_t bpp);
-void dump_raw(const st_img_t *img, const char *filename);
+void transform_img(st_img_t *img, px_transform, void *opt);
+void transform_img_xy(st_img_t *img, px_transform_xy, void *opt);
+
+e_channel_t get_channel(e_bayer_pattern_t pattern, uint32_t x, uint32_t y);
+
+st_img_t *alloc_img(uint32_t width, uint32_t height, e_bpp_t bpp, e_bayer_pattern_t pattern);
 
 #endif

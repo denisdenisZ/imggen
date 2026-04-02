@@ -4,7 +4,8 @@ typedef enum {
     MIN,
     MAX,
     LINEAR_GRADIENT,
-    CHECKERS
+    LINEAR_GRADIENT_PER_CH,
+    CHECKERS,
 } e_pattern_t;
 
 void create_image(
